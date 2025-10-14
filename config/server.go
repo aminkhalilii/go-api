@@ -16,10 +16,5 @@ func InitGin() *gin.Engine {
 	// Middleware عمومی، مثلا logger یا CORS
 	// router.Use(CORSMiddleware())
 
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "8080" // مقدار پیش‌فرض
-	}
-
 	return router
 }

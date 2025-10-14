@@ -7,7 +7,7 @@ import (
 )
 
 func RegisterUserRoutes(r *gin.Engine) {
-	userController := controllers.UserController{}
-	r.GET("/", userController.GetAllUsers)
+
+	r.GET("/", controllers.GetAllUsers)
 
 }
