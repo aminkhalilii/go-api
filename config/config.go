@@ -37,11 +37,16 @@ func InitMysql() {
 	if err != nil {
 		log.Fatal("❌ Failed to create database:", err)
 	}
-	//test
-	if err := DB.Ping(); err != nil {
+
+	dsnWithDB := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?parseTime=true", dbUser, dbPass, dbHost, dbPort, dbName)
+	DB, err = sql.Open("mysql", dsnWithDB)
+	if err != nil {
 		log.Fatal(err)
 	}
 
+	if err := DB.Ping(); err != nil {
+		log.Fatal(err)
+	}
 	fmt.Print("Connected to MySQL successfully \n")
 
 }

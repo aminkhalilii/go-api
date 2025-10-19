@@ -1,6 +1,9 @@
 package mysql
 
-import "go-api/internal/models"
+import (
+	"go-api/config"
+	"go-api/internal/models"
+)
 
 type MysqlRepository struct {
 }
@@ -10,10 +13,25 @@ func NewMysqlRepository() *MysqlRepository {
 }
 
 func (msql *MysqlRepository) GetAllUsers() ([]models.User, error) {
-	users := []models.User{
-		{ID: 1, Name: "amin", Email: "aminkhalili@gmail.com", Password: "12345"},
-		{ID: 2, Name: "sara", Email: "sara@example.com", Password: "54321"},
+	rows, err := config.DB.Query("select * from users")
+	if err != nil {
+		return nil, err
+
 	}
+	defer rows.Close()
+	var users []models.User
+	for rows.Next() {
+		var user models.User
+		err := rows.Scan(&user.ID, &user.Name, &user.Email, &user.Password)
+		if err != nil {
+			return nil, err
+		}
+		users = append(users, user)
+	}
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
 	return users, nil
 
 }

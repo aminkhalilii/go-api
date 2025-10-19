@@ -8,6 +8,6 @@ import (
 
 func RegisterUserRoutes(r *gin.Engine, uc *controllers.UserController) {
 
-	r.GET("/", uc.GetAllUsers)
+	r.GET("/users", uc.GetAllUsers)
 
 }
