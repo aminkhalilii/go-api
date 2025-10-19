@@ -7,7 +7,15 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func GetAllUsers(c *gin.Context) {
-	users := services.GetAllUsers()
+type UserController struct {
+	userService services.UserServiceInterface
+}
+
+func NewUserController(userService services.UserServiceInterface) *UserController {
+	return &UserController{userService: userService}
+}
+
+func (uc *UserController) GetAllUsers(c *gin.Context) {
+	users := uc.userService.GetAllUsers()
 	c.JSON(http.StatusOK, gin.H{"users": users})
 }

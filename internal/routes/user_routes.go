@@ -6,8 +6,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func RegisterUserRoutes(r *gin.Engine) {
+func RegisterUserRoutes(r *gin.Engine, uc *controllers.UserController) {
 
-	r.GET("/", controllers.GetAllUsers)
+	r.GET("/", uc.GetAllUsers)
 
 }

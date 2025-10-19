@@ -1,8 +1,11 @@
 package routes
 
-import "github.com/gin-gonic/gin"
+import (
+	"go-api/internal/controllers"
 
-func RegisterAllRoutes(r *gin.Engine) {
+	"github.com/gin-gonic/gin"
+)
 
-	RegisterUserRoutes(r)
+func RegisterAllRoutes(r *gin.Engine, userController *controllers.UserController) {
+	RegisterUserRoutes(r, userController)
 }
