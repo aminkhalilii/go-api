@@ -1,6 +1,7 @@
 package mysql
 
 import (
+	"database/sql"
 	"go-api/config"
 	"go-api/internal/models"
 )
@@ -34,4 +35,18 @@ func (msql *MysqlRepository) GetAllUsers() ([]models.User, error) {
 
 	return users, nil
 
+}
+func (msql *MysqlRepository) GetUserByID(id int) (*models.User, error) {
+	var user models.User
+
+	row := config.DB.QueryRow("SELECT * FROM users WHERE id=?", id)
+	err := row.Scan(&user.ID, &user.Name, &user.Email, &user.Password)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil // کاربری با این ID پیدا نشد
+		}
+		return nil, err
+	}
+
+	return &user, nil
 }

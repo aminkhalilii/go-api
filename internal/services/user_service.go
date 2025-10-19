@@ -7,6 +7,7 @@ import (
 
 type UserServiceInterface interface {
 	GetAllUsers() []models.User
+	GetUserByID(id int) *models.User
 }
 
 type UserService struct {
@@ -24,4 +25,12 @@ func (s *UserService) GetAllUsers() []models.User {
 		return []models.User{}
 	}
 	return users
+}
+func (s *UserService) GetUserByID(id int) *models.User {
+	user, err := s.userRepository.GetUserByID(id)
+	if err != nil {
+		// در حالت واقعی بهتره مدیریت خطا انجام بدیم
+		return nil
+	}
+	return user
 }
