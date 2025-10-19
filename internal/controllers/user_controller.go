@@ -18,7 +18,11 @@ func NewUserController(userService services.UserServiceInterface) *UserControlle
 }
 
 func (uc *UserController) GetAllUsers(c *gin.Context) {
-	users := uc.userService.GetAllUsers()
+	users, err := uc.userService.GetAllUsers()
+	if err != nil {
+		c.JSON(400, gin.H{"error": err})
+		return
+	}
 	c.JSON(http.StatusOK, gin.H{"users": users})
 }
 func (uc *UserController) GetUserByID(c *gin.Context) {
@@ -28,7 +32,11 @@ func (uc *UserController) GetUserByID(c *gin.Context) {
 		c.JSON(400, gin.H{"error": "Invalid user ID"})
 		return
 	}
-	user := uc.userService.GetUserByID(id)
+	user, err := uc.userService.GetUserByID(id)
+	if err != nil {
+		c.JSON(400, gin.H{"error": err})
+		return
+	}
 	c.JSON(http.StatusOK, gin.H{"user": user})
 }
 func (uc *UserController) CreateUser(c *gin.Context) {

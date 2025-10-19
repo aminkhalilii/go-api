@@ -6,8 +6,8 @@ import (
 )
 
 type UserServiceInterface interface {
-	GetAllUsers() []models.User
-	GetUserByID(id int) *models.User
+	GetAllUsers() ([]models.User, error)
+	GetUserByID(id int) (*models.User, error)
 	CreateUser(*models.User) (*models.User, error)
 	UpdateUser(id int, user *models.User) (*models.User, error)
 	DeleteUser(id int) error
@@ -21,21 +21,21 @@ func NewUserService(userRepository repositories.UserRepositoryInterface) *UserSe
 	return &UserService{userRepository: userRepository}
 }
 
-func (s *UserService) GetAllUsers() []models.User {
+func (s *UserService) GetAllUsers() ([]models.User, error) {
 	users, err := s.userRepository.GetAllUsers()
 	if err != nil {
 		// در حالت واقعی بهتره مدیریت خطا انجام بدیم
-		return []models.User{}
+		return nil, err
 	}
-	return users
+	return users, nil
 }
-func (s *UserService) GetUserByID(id int) *models.User {
+func (s *UserService) GetUserByID(id int) (*models.User, error) {
 	user, err := s.userRepository.GetUserByID(id)
 	if err != nil {
 		// در حالت واقعی بهتره مدیریت خطا انجام بدیم
-		return nil
+		return nil, err
 	}
-	return user
+	return user, nil
 }
 func (s *UserService) CreateUser(user *models.User) (*models.User, error) {
 	return s.userRepository.CreateUser(user)
