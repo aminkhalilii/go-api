@@ -50,3 +50,16 @@ func (msql *MysqlRepository) GetUserByID(id int) (*models.User, error) {
 
 	return &user, nil
 }
+func (msql *MysqlRepository) CreateUser(user *models.User) (*models.User, error) {
+
+	result, err := config.DB.Exec("insert into users (name,email,password ) values (?,?,?)", user.Name, user.Email, user.Password)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil // کاربری با این ID پیدا نشد
+		}
+		return nil, err
+	}
+	id, _ := result.LastInsertId()
+	user.ID = int(id)
+	return user, nil
+}

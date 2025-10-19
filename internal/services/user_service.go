@@ -8,6 +8,7 @@ import (
 type UserServiceInterface interface {
 	GetAllUsers() []models.User
 	GetUserByID(id int) *models.User
+	CreateUser(*models.User) (*models.User, error)
 }
 
 type UserService struct {
@@ -33,4 +34,8 @@ func (s *UserService) GetUserByID(id int) *models.User {
 		return nil
 	}
 	return user
+}
+func (s *UserService) CreateUser(user *models.User) (*models.User, error) {
+	return s.userRepository.CreateUser(user)
+
 }
