@@ -9,6 +9,8 @@ type UserServiceInterface interface {
 	GetAllUsers() []models.User
 	GetUserByID(id int) *models.User
 	CreateUser(*models.User) (*models.User, error)
+	UpdateUser(id int, user *models.User) (*models.User, error)
+	DeleteUser(id int) error
 }
 
 type UserService struct {
@@ -38,4 +40,11 @@ func (s *UserService) GetUserByID(id int) *models.User {
 func (s *UserService) CreateUser(user *models.User) (*models.User, error) {
 	return s.userRepository.CreateUser(user)
 
+}
+
+func (s *UserService) UpdateUser(id int, user *models.User) (*models.User, error) {
+	return s.userRepository.UpdateUser(id, user)
+}
+func (s *UserService) DeleteUser(id int) error {
+	return s.userRepository.DeleteUser(id)
 }

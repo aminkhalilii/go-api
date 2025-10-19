@@ -45,3 +45,41 @@ func (uc *UserController) CreateUser(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, gin.H{"data": newUser})
 }
+
+func (uc *UserController) UpdateUser(c *gin.Context) {
+	idStr := c.Params.ByName("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		c.JSON(400, gin.H{"error": "Invalid user ID"})
+		return
+	}
+
+	var user models.User
+	err = c.ShouldBindJSON(&user)
+	if err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+	newUser, err := uc.userService.UpdateUser(id, &user)
+	if err != nil {
+		c.JSON(500, gin.H{"error": err})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"data": newUser})
+
+}
+func (uc *UserController) DeleteUser(c *gin.Context) {
+	idStr := c.Params.ByName("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		c.JSON(400, gin.H{"error": "Invalid user ID"})
+		return
+	}
+	err = uc.userService.DeleteUser(id)
+	if err != nil {
+		c.JSON(500, gin.H{"error": err})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"data": "data has been deleted"})
+
+}

@@ -63,3 +63,27 @@ func (msql *MysqlRepository) CreateUser(user *models.User) (*models.User, error)
 	user.ID = int(id)
 	return user, nil
 }
+
+func (msql *MysqlRepository) UpdateUser(id int, user *models.User) (*models.User, error) {
+	_, err := config.DB.Exec("update users set name=?,email=?,password=? where id=?", user.Name, user.Email, user.Password, id)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil // کاربری با این ID پیدا نشد
+		}
+		return nil, err
+	}
+	return user, nil
+
+}
+
+func (msql *MysqlRepository) DeleteUser(id int) error {
+	_, err := config.DB.Exec("delete from users  where id=?", id)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil // کاربری با این ID پیدا نشد
+		}
+		return err
+	}
+	return nil
+
+}
