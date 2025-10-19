@@ -65,11 +65,20 @@ func (msql *MysqlRepository) CreateUser(user *models.User) (*models.User, error)
 }
 
 func (msql *MysqlRepository) UpdateUser(id int, user *models.User) (*models.User, error) {
-	_, err := config.DB.Exec("update users set name=?,email=?,password=? where id=?", user.Name, user.Email, user.Password, id)
+	tx, err := config.DB.Begin()
+	if err != nil {
+		return nil, err
+	}
+	_, err = tx.Exec("update users set name=?,email=?,password=? where id=?", user.Name, user.Email, user.Password, id)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, nil // کاربری با این ID پیدا نشد
 		}
+		tx.Rollback()
+		return nil, err
+	}
+	err = tx.Commit()
+	if err != nil {
 		return nil, err
 	}
 	return user, nil
