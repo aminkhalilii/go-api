@@ -54,9 +54,6 @@ func (msql *MysqlRepository) CreateUser(user *models.User) (*models.User, error)
 
 	result, err := config.DB.Exec("insert into users (name,email,password ) values (?,?,?)", user.Name, user.Email, user.Password)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil, nil //if id not exist return nil
-		}
 		return nil, err
 	}
 	id, _ := result.LastInsertId()
@@ -65,19 +62,7 @@ func (msql *MysqlRepository) CreateUser(user *models.User) (*models.User, error)
 }
 
 func (msql *MysqlRepository) UpdateUser(id int, user *models.User) (*models.User, error) {
-	tx, err := config.DB.Begin()
-	if err != nil {
-		return nil, err
-	}
-	_, err = tx.Exec("update users set name=?,email=?,password=? where id=?", user.Name, user.Email, user.Password, id)
-	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil, nil //if id not exist return nil
-		}
-		tx.Rollback()
-		return nil, err
-	}
-	err = tx.Commit()
+	_, err := config.DB.Exec("UPDATE users SET name=?, email=?, password=? WHERE id=?", user.Name, user.Email, user.Password, id)
 	if err != nil {
 		return nil, err
 	}
@@ -95,4 +80,19 @@ func (msql *MysqlRepository) DeleteUser(id int) error {
 	}
 	return nil
 
+}
+
+func (msql *MysqlRepository) GetUserByEmail(email string) (*models.User, error) {
+	var user models.User
+
+	row := config.DB.QueryRow("SELECT * FROM users WHERE email=?", email)
+	err := row.Scan(&user.ID, &user.Name, &user.Email, &user.Password)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil //if id not exist return nil
+		}
+		return nil, err
+	}
+
+	return &user, nil
 }
