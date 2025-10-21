@@ -24,7 +24,7 @@ func NewUserService(userRepository repositories.UserRepositoryInterface) *UserSe
 func (s *UserService) GetAllUsers() ([]models.User, error) {
 	users, err := s.userRepository.GetAllUsers()
 	if err != nil {
-		// در حالت واقعی بهتره مدیریت خطا انجام بدیم
+		//should be handled in real world
 		return nil, err
 	}
 	return users, nil
@@ -32,7 +32,7 @@ func (s *UserService) GetAllUsers() ([]models.User, error) {
 func (s *UserService) GetUserByID(id int) (*models.User, error) {
 	user, err := s.userRepository.GetUserByID(id)
 	if err != nil {
-		// در حالت واقعی بهتره مدیریت خطا انجام بدیم
+		//should be handled in real world
 		return nil, err
 	}
 	return user, nil

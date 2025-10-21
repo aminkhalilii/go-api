@@ -13,7 +13,7 @@ func InitGin() *gin.Engine {
 	}
 	gin.SetMode(ginMode)
 	router := gin.Default()
-	// Middleware عمومی، مثلا logger یا CORS
+	// Middleware  like generals , logger or  CORS
 	// router.Use(CORSMiddleware())
 
 	return router

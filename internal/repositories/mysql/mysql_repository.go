@@ -43,7 +43,7 @@ func (msql *MysqlRepository) GetUserByID(id int) (*models.User, error) {
 	err := row.Scan(&user.ID, &user.Name, &user.Email, &user.Password)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return nil, nil // کاربری با این ID پیدا نشد
+			return nil, nil //if id not exist return nil
 		}
 		return nil, err
 	}
@@ -55,7 +55,7 @@ func (msql *MysqlRepository) CreateUser(user *models.User) (*models.User, error)
 	result, err := config.DB.Exec("insert into users (name,email,password ) values (?,?,?)", user.Name, user.Email, user.Password)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return nil, nil // کاربری با این ID پیدا نشد
+			return nil, nil //if id not exist return nil
 		}
 		return nil, err
 	}
@@ -72,7 +72,7 @@ func (msql *MysqlRepository) UpdateUser(id int, user *models.User) (*models.User
 	_, err = tx.Exec("update users set name=?,email=?,password=? where id=?", user.Name, user.Email, user.Password, id)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return nil, nil // کاربری با این ID پیدا نشد
+			return nil, nil //if id not exist return nil
 		}
 		tx.Rollback()
 		return nil, err
@@ -89,7 +89,7 @@ func (msql *MysqlRepository) DeleteUser(id int) error {
 	_, err := config.DB.Exec("delete from users  where id=?", id)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return nil // کاربری با این ID پیدا نشد
+			return nil //if id not exist return nil
 		}
 		return err
 	}
