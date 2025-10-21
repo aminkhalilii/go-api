@@ -3,6 +3,7 @@ package controllers
 import (
 	"go-api/internal/models"
 	"go-api/internal/services"
+	"go-api/pkg/utils"
 	"net/http"
 	"strconv"
 
@@ -39,48 +40,48 @@ func (uc *UserController) GetUserByID(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, gin.H{"user": user})
 }
+
 func (uc *UserController) CreateUser(c *gin.Context) {
 	var user models.User
 	err := c.ShouldBindJSON(&user)
 	if err != nil {
-		c.JSON(400, gin.H{"error": err.Error()})
+		utils.Error(c, http.StatusBadRequest, "Invalid input")
 		return
 	}
 	newUser, err := uc.userService.CreateUser(&user)
 	if err != nil {
-		c.JSON(500, gin.H{"error": err})
+		utils.Error(c, http.StatusInternalServerError, err.Error())
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"data": newUser})
+	utils.Success(c, newUser, "User created successfully")
 }
 
 func (uc *UserController) UpdateUser(c *gin.Context) {
 	idStr := c.Params.ByName("id")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
-		c.JSON(400, gin.H{"error": "Invalid user ID"})
+		utils.Error(c, http.StatusBadRequest, "Invalid user ID")
 		return
 	}
 
 	var user models.User
 	err = c.ShouldBindJSON(&user)
 	if err != nil {
-		c.JSON(400, gin.H{"error": err.Error()})
+		utils.Error(c, http.StatusBadRequest, err.Error())
 		return
 	}
 	newUser, err := uc.userService.UpdateUser(id, &user)
 	if err != nil {
-		c.JSON(500, gin.H{"error": err})
+		utils.Error(c, http.StatusInternalServerError, err.Error())
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"data": newUser})
-
+	utils.Success(c, newUser, "User updated successfully")
 }
 func (uc *UserController) DeleteUser(c *gin.Context) {
 	idStr := c.Params.ByName("id")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
-		c.JSON(400, gin.H{"error": "Invalid user ID"})
+		utils.Error(c, http.StatusBadRequest, "Invalid user ID")
 		return
 	}
 	err = uc.userService.DeleteUser(id)
@@ -88,6 +89,6 @@ func (uc *UserController) DeleteUser(c *gin.Context) {
 		c.JSON(500, gin.H{"error": err})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"data": "data has been deleted"})
+	utils.Success(c, nil, "User updated successfully")
 
 }

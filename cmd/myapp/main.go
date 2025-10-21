@@ -12,8 +12,9 @@ import (
 
 func main() {
 
+	config.LoadConfig()
 	//init mysql
-	config.InitMysql()
+	config.InitDatabase()
 
 	// init gin
 	router := config.InitGin()

@@ -3,8 +3,7 @@ package services
 import (
 	"go-api/internal/models"
 	"go-api/internal/repositories"
-
-	"golang.org/x/crypto/bcrypt"
+	"go-api/pkg/security"
 )
 
 type UserServiceInterface interface {
@@ -40,8 +39,11 @@ func (s *UserService) GetUserByID(id int) (*models.User, error) {
 	return user, nil
 }
 func (s *UserService) CreateUser(user *models.User) (*models.User, error) {
-	hashed, _ := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
-	user.Password = string(hashed)
+	hashed, err := security.HashPassword(user.Password)
+	if err != nil {
+		return nil, err
+	}
+	user.Password = hashed
 	return s.userRepository.CreateUser(user)
 
 }
