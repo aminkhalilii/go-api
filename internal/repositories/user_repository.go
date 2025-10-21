@@ -1,14 +1,13 @@
 package repositories
 
-import (
-	"go-api/internal/models"
-)
+import "go-api/internal/models"
 
-// متد برای گرفتن همه کاربران
-func GetAllUsers() []models.User {
-	users := []models.User{
-		{ID: 1, Name: "amin", Email: "aminkhalili@gmail.com", Password: "12345"},
-		{ID: 2, Name: "sara", Email: "sara@example.com", Password: "54321"},
-	}
-	return users
+// UserRepository defines data access behavior
+type UserRepositoryInterface interface {
+	GetAllUsers() ([]models.User, error)
+	GetUserByID(id int) (*models.User, error)
+	GetUserByEmail(email string) (*models.User, error)
+	CreateUser(*models.User) (*models.User, error)
+	UpdateUser(id int, user *models.User) (*models.User, error)
+	DeleteUser(id int) error
 }
