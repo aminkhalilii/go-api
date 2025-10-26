@@ -39,7 +39,11 @@ func (uc *UserController) GetUserByID(c *gin.Context) {
 
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"user": user})
+	if user == nil {
+		utils.Error(c, http.StatusNotFound, "User not found")
+		return
+	}
+	utils.Success(c, http.StatusOK, "User retrieved successfully", user)
 }
 
 func (uc *UserController) CreateUser(c *gin.Context) {
@@ -76,7 +80,7 @@ func (uc *UserController) UpdateUser(c *gin.Context) {
 		utils.Error(c, http.StatusInternalServerError, err.Error())
 		return
 	}
-	utils.Success(c, http.StatusCreated, "User updated successfully", newUser)
+	utils.Success(c, http.StatusOK, "User updated successfully", newUser)
 }
 func (uc *UserController) DeleteUser(c *gin.Context) {
 	idStr := c.Params.ByName("id")
@@ -87,7 +91,7 @@ func (uc *UserController) DeleteUser(c *gin.Context) {
 	}
 	err = uc.userService.DeleteUser(id)
 	if err != nil {
-		c.JSON(500, gin.H{"error": err})
+		utils.Error(c, http.StatusInternalServerError, err.Error())
 		return
 	}
 	utils.Success(c, http.StatusOK, "User updated successfully", nil)
