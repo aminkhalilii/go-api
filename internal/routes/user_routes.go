@@ -7,8 +7,10 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func RegisterUserRoutes(r *gin.Engine, uc *controllers.UserController) {
+func RegisterUserRoutes(r *gin.Engine, uc *controllers.UserController, ac *controllers.AuthController) {
 
+	r.POST("/register", ac.Register)
+	r.POST("/login", ac.Login)
 	authorized := r.Group("/")
 	authorized.Use(middlewares.AuthRequired())
 	{
