@@ -11,6 +11,7 @@ func RegisterUserRoutes(r *gin.Engine, uc *controllers.UserController, ac *contr
 
 	r.POST("/register", ac.Register)
 	r.POST("/login", ac.Login)
+	r.POST("/refresh", ac.RefreshToken)
 	authorized := r.Group("/")
 	authorized.Use(middlewares.AuthRequired())
 	{
