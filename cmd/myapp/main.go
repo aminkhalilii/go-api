@@ -40,8 +40,10 @@ func main() {
 
 	mysqlRepo := mysql.NewMysqlRepository() //mysql
 	userService := services.NewUserService(mysqlRepo)
+	authService := services.NewAuthService(mysqlRepo)
 	userController := controllers.NewUserController(userService)
-	routes.RegisterUserRoutes(router, userController)
+	authController := controllers.NewAuthController(authService)
+	routes.RegisterUserRoutes(router, userController, authController)
 
 	// routes.RegisterAllRoutes(router, userController)
 

@@ -2,16 +2,24 @@ package routes
 
 import (
 	"go-api/internal/controllers"
+	"go-api/internal/middlewares"
 
 	"github.com/gin-gonic/gin"
 )
 
-func RegisterUserRoutes(r *gin.Engine, uc *controllers.UserController) {
+func RegisterUserRoutes(r *gin.Engine, uc *controllers.UserController, ac *controllers.AuthController) {
 
-	r.GET("/users", uc.GetAllUsers)
-	r.GET("/users/:id", uc.GetUserByID)
-	r.POST("/users", uc.CreateUser)
-	r.PUT("/users/:id", uc.UpdateUser)
-	r.DELETE("/users/:id", uc.DeleteUser)
+	r.POST("/register", ac.Register)
+	r.POST("/login", ac.Login)
+	authorized := r.Group("/")
+	authorized.Use(middlewares.AuthRequired())
+	{
+		authorized.GET("/users", uc.GetAllUsers)
+		authorized.GET("/users/:id", uc.GetUserByID)
+		authorized.POST("/users", uc.CreateUser)
+		authorized.PUT("/users/:id", uc.UpdateUser)
+		authorized.DELETE("/users/:id", uc.DeleteUser)
+
+	}
 
 }

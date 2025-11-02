@@ -8,8 +8,8 @@ type ApiResponse struct {
 	Data    interface{} `json:"data,omitempty"`
 }
 
-func Success(c *gin.Context, data interface{}, message string) {
-	c.JSON(200, ApiResponse{
+func Success(c *gin.Context, statusCode int, message string, data interface{}) {
+	c.JSON(statusCode, ApiResponse{
 		Status:  "success",
 		Message: message,
 		Data:    data,
