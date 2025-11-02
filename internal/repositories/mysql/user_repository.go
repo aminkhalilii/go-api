@@ -6,14 +6,14 @@ import (
 	"go-api/internal/models"
 )
 
-type MysqlRepository struct {
+type MysqlUserRepository struct {
 }
 
-func NewMysqlRepository() *MysqlRepository {
-	return &MysqlRepository{}
+func NewMysqlRepository() *MysqlUserRepository {
+	return &MysqlUserRepository{}
 }
 
-func (msql *MysqlRepository) GetAllUsers() ([]models.User, error) {
+func (msql *MysqlUserRepository) GetAllUsers() ([]models.User, error) {
 	rows, err := config.DB.Query("select id,name,email,password from users")
 	if err != nil {
 		return nil, err
@@ -36,7 +36,7 @@ func (msql *MysqlRepository) GetAllUsers() ([]models.User, error) {
 	return users, nil
 
 }
-func (msql *MysqlRepository) GetUserByID(id int) (*models.User, error) {
+func (msql *MysqlUserRepository) GetUserByID(id int) (*models.User, error) {
 	var user models.User
 
 	row := config.DB.QueryRow("SELECT * FROM users WHERE id=?", id)
@@ -50,7 +50,7 @@ func (msql *MysqlRepository) GetUserByID(id int) (*models.User, error) {
 
 	return &user, nil
 }
-func (msql *MysqlRepository) CreateUser(user *models.User) (*models.User, error) {
+func (msql *MysqlUserRepository) CreateUser(user *models.User) (*models.User, error) {
 
 	result, err := config.DB.Exec("insert into users (name,email,password ) values (?,?,?)", user.Name, user.Email, user.Password)
 	if err != nil {
@@ -61,7 +61,7 @@ func (msql *MysqlRepository) CreateUser(user *models.User) (*models.User, error)
 	return user, nil
 }
 
-func (msql *MysqlRepository) UpdateUser(id int, user *models.User) (*models.User, error) {
+func (msql *MysqlUserRepository) UpdateUser(id int, user *models.User) (*models.User, error) {
 	_, err := config.DB.Exec("UPDATE users SET name=?, email=?, password=? WHERE id=?", user.Name, user.Email, user.Password, id)
 	if err != nil {
 		return nil, err
@@ -70,7 +70,7 @@ func (msql *MysqlRepository) UpdateUser(id int, user *models.User) (*models.User
 
 }
 
-func (msql *MysqlRepository) DeleteUser(id int) error {
+func (msql *MysqlUserRepository) DeleteUser(id int) error {
 	_, err := config.DB.Exec("delete from users  where id=?", id)
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -82,7 +82,7 @@ func (msql *MysqlRepository) DeleteUser(id int) error {
 
 }
 
-func (msql *MysqlRepository) GetUserByEmail(email string) (*models.User, error) {
+func (msql *MysqlUserRepository) GetUserByEmail(email string) (*models.User, error) {
 	var user models.User
 
 	row := config.DB.QueryRow("SELECT * FROM users WHERE email=?", email)
