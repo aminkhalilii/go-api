@@ -41,6 +41,16 @@ func InitDatabase() {
 		email VARCHAR(100) UNIQUE NOT NULL,
 		password VARCHAR(255) NOT NULL
 	);
+
+	CREATE TABLE IF NOT EXISTS products (
+		id INT AUTO_INCREMENT PRIMARY KEY,
+		name VARCHAR(100) NOT NULL,
+		description TEXT  ,
+		price VARCHAR(255) NOT NULL,
+		created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+		updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+		deleted_at TIMESTAMP NULL
+	);
 	`
 	_, err = DB.Exec(query)
 	if err != nil {
