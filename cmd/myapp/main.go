@@ -44,6 +44,7 @@ func main() {
 	userController := controllers.NewUserController(userService)
 	authController := controllers.NewAuthController(authService)
 	routes.RegisterUserRoutes(router, userController, authController)
+	routes.RegisterUserRoutes(router, userController, authController)
 
 	// routes.RegisterAllRoutes(router, userController)
 
