@@ -32,29 +32,35 @@ func InitDatabase() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	queryUsers := `
+CREATE TABLE IF NOT EXISTS users (
+	id INT AUTO_INCREMENT PRIMARY KEY,
+	name VARCHAR(100) NOT NULL,
+	email VARCHAR(100) UNIQUE NOT NULL,
+	password VARCHAR(255) NOT NULL
+);
+`
 
-	// Migration ساده
-	query := `
-	CREATE TABLE IF NOT EXISTS users (
-		id INT AUTO_INCREMENT PRIMARY KEY,
-		name VARCHAR(100) NOT NULL,
-		email VARCHAR(100) UNIQUE NOT NULL,
-		password VARCHAR(255) NOT NULL
-	);
+	queryProducts := `
+CREATE TABLE IF NOT EXISTS products (
+	id INT AUTO_INCREMENT PRIMARY KEY,
+	name VARCHAR(100) NOT NULL,
+	description TEXT,
+	price VARCHAR(255) NOT NULL,
+	created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+	deleted_at TIMESTAMP NULL
+);
+`
 
-	CREATE TABLE IF NOT EXISTS products (
-		id INT AUTO_INCREMENT PRIMARY KEY,
-		name VARCHAR(100) NOT NULL,
-		description TEXT  ,
-		price VARCHAR(255) NOT NULL,
-		created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-		updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-		deleted_at TIMESTAMP NULL
-	);
-	`
-	_, err = DB.Exec(query)
+	_, err = DB.Exec(queryUsers)
 	if err != nil {
-		log.Fatal("❌ Failed to create users table:", err)
+		log.Fatalf("❌ Failed to create users table: %v", err)
+	}
+
+	_, err = DB.Exec(queryProducts)
+	if err != nil {
+		log.Fatalf("❌ Failed to create products table: %v", err)
 	}
 
 	log.Println("✅ Connected to MySQL and initialized database")
