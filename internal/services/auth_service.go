@@ -87,7 +87,7 @@ func (s *AuthService) Login(email, password string) (*models.User, error) {
 		return nil, errors.New("user not found")
 	}
 
-	err = security.CheckPasswordHash(user.Password, password)
+	err = security.CheckPasswordHash(password, user.Password)
 	if err != nil {
 		return nil, errors.New("invalid password")
 	}
