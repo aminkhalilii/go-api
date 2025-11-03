@@ -21,24 +21,29 @@ func NewUserController(userService services.UserServiceInterface) *UserControlle
 func (uc *UserController) GetAllUsers(c *gin.Context) {
 	users, err := uc.userService.GetAllUsers()
 	if err != nil {
-		c.JSON(400, gin.H{"error": err})
+		utils.Error(c, http.StatusBadRequest, err.Error())
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"users": users})
+	utils.Success(c, http.StatusOK, "Users retrieved successfully", users)
 }
 func (uc *UserController) GetUserByID(c *gin.Context) {
 	idStr := c.Params.ByName("id")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
-		c.JSON(400, gin.H{"error": "Invalid user ID"})
+		utils.Error(c, http.StatusBadRequest, "Invalid user ID")
 		return
 	}
 	user, err := uc.userService.GetUserByID(id)
 	if err != nil {
-		c.JSON(400, gin.H{"error": err})
+		utils.Error(c, http.StatusBadRequest, err.Error())
+
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"user": user})
+	if user == nil {
+		utils.Error(c, http.StatusNotFound, "User not found")
+		return
+	}
+	utils.Success(c, http.StatusOK, "User retrieved successfully", user)
 }
 
 func (uc *UserController) CreateUser(c *gin.Context) {
@@ -53,7 +58,7 @@ func (uc *UserController) CreateUser(c *gin.Context) {
 		utils.Error(c, http.StatusInternalServerError, err.Error())
 		return
 	}
-	utils.Success(c, newUser, "User created successfully")
+	utils.Success(c, http.StatusCreated, "User created successfully", newUser)
 }
 
 func (uc *UserController) UpdateUser(c *gin.Context) {
@@ -75,7 +80,7 @@ func (uc *UserController) UpdateUser(c *gin.Context) {
 		utils.Error(c, http.StatusInternalServerError, err.Error())
 		return
 	}
-	utils.Success(c, newUser, "User updated successfully")
+	utils.Success(c, http.StatusOK, "User updated successfully", newUser)
 }
 func (uc *UserController) DeleteUser(c *gin.Context) {
 	idStr := c.Params.ByName("id")
@@ -86,9 +91,9 @@ func (uc *UserController) DeleteUser(c *gin.Context) {
 	}
 	err = uc.userService.DeleteUser(id)
 	if err != nil {
-		c.JSON(500, gin.H{"error": err})
+		utils.Error(c, http.StatusInternalServerError, err.Error())
 		return
 	}
-	utils.Success(c, nil, "User updated successfully")
+	utils.Success(c, http.StatusOK, "User updated successfully", nil)
 
 }

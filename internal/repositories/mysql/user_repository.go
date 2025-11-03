@@ -14,7 +14,7 @@ func NewMysqlRepository() *MysqlRepository {
 }
 
 func (msql *MysqlRepository) GetAllUsers() ([]models.User, error) {
-	rows, err := config.DB.Query("select * from users")
+	rows, err := config.DB.Query("select id,name,email,password from users")
 	if err != nil {
 		return nil, err
 
