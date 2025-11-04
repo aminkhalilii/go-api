@@ -38,13 +38,17 @@ func main() {
 
 	// initialize service (inject repository)
 
-	mysqlRepo := mysql.NewMysqlRepository() //mysql
+	mysqlRepo := mysql.NewMysqlRepository()
 	userService := services.NewUserService(mysqlRepo)
 	authService := services.NewAuthService(mysqlRepo)
 	userController := controllers.NewUserController(userService)
 	authController := controllers.NewAuthController(authService)
 	routes.RegisterUserRoutes(router, userController, authController)
-	routes.RegisterUserRoutes(router, userController, authController)
+
+	productMysqlRepo := mysql.NewProductMysqlRepository()
+	productService := services.NewProductService(productMysqlRepo)
+	productController := controllers.NewProductController(productService)
+	routes.RegisterProductRoutes(router, productController)
 
 	// routes.RegisterAllRoutes(router, userController)
 

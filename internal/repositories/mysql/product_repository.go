@@ -9,8 +9,8 @@ import (
 type ProductMysqlRepository struct {
 }
 
-func NewProductMysqlRepository() *MysqlRepository {
-	return &MysqlRepository{}
+func NewProductMysqlRepository() *ProductMysqlRepository {
+	return &ProductMysqlRepository{}
 }
 
 func (msql *ProductMysqlRepository) GetAllProducts() ([]models.Product, error) {
@@ -36,11 +36,12 @@ func (msql *ProductMysqlRepository) GetAllProducts() ([]models.Product, error) {
 	return products, nil
 
 }
-func (msql *ProductMysqlRepository) GetUserByID(id int) (*models.User, error) {
-	var user models.User
 
-	row := config.DB.QueryRow("SELECT * FROM users WHERE id=?", id)
-	err := row.Scan(&user.ID, &user.Name, &user.Email, &user.Password)
+func (msql *ProductMysqlRepository) GetProductByID(id int) (*models.Product, error) {
+	var product models.Product
+
+	row := config.DB.QueryRow("SELECT * FROM products WHERE id=?", id)
+	err := row.Scan(&product.ID, &product.Name, &product.Description, &product.Price, &product.CreatedAt, &product.UpdatedAt, &product.DeletedAt)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, nil //if id not exist return nil
@@ -48,30 +49,30 @@ func (msql *ProductMysqlRepository) GetUserByID(id int) (*models.User, error) {
 		return nil, err
 	}
 
-	return &user, nil
+	return &product, nil
 }
-func (msql *ProductMysqlRepository) CreateUser(user *models.User) (*models.User, error) {
+func (msql *ProductMysqlRepository) CreateProduct(product *models.Product) (*models.Product, error) {
 
-	result, err := config.DB.Exec("insert into users (name,email,password ) values (?,?,?)", user.Name, user.Email, user.Password)
+	result, err := config.DB.Exec("insert into products (name,description,price ) values (?,?,?)", product.Name, product.Description, product.Price)
 	if err != nil {
 		return nil, err
 	}
 	id, _ := result.LastInsertId()
-	user.ID = int(id)
-	return user, nil
+	product.ID = int(id)
+	return product, nil
 }
 
-func (msql *ProductMysqlRepository) UpdateUser(id int, user *models.User) (*models.User, error) {
-	_, err := config.DB.Exec("UPDATE users SET name=?, email=?, password=? WHERE id=?", user.Name, user.Email, user.Password, id)
+func (msql *ProductMysqlRepository) UpdateProduct(id int, product *models.Product) (*models.Product, error) {
+	_, err := config.DB.Exec("UPDATE products SET name=?, description=?, price=? WHERE id=?", product.Name, product.Description, product.Price, id)
 	if err != nil {
 		return nil, err
 	}
-	return user, nil
+	return product, nil
 
 }
 
-func (msql *ProductMysqlRepository) DeleteUser(id int) error {
-	_, err := config.DB.Exec("delete from users  where id=?", id)
+func (msql *ProductMysqlRepository) DeleteProduct(id int) error {
+	_, err := config.DB.Exec("delete from products  where id=?", id)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil //if id not exist return nil
@@ -80,19 +81,4 @@ func (msql *ProductMysqlRepository) DeleteUser(id int) error {
 	}
 	return nil
 
-}
-
-func (msql *ProductMysqlRepository) GetUserByEmail(email string) (*models.User, error) {
-	var user models.User
-
-	row := config.DB.QueryRow("SELECT * FROM users WHERE email=?", email)
-	err := row.Scan(&user.ID, &user.Name, &user.Email, &user.Password)
-	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil, nil //if id not exist return nil
-		}
-		return nil, err
-	}
-
-	return &user, nil
 }
