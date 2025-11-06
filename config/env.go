@@ -3,6 +3,7 @@ package config
 import (
 	"log"
 	"os"
+	"strconv"
 
 	"github.com/joho/godotenv"
 )
@@ -16,6 +17,10 @@ type Config struct {
 	GinMode   string
 	Port      string
 	JwtSecret string
+	// Redis
+	RedisAddr string
+	RedisPass string
+	RedisDB   int
 }
 
 var AppConfig *Config
@@ -25,7 +30,7 @@ func LoadConfig() {
 	if err != nil {
 		log.Println("⚠️ No .env file found, using system envs")
 	}
-
+	redisDB, _ := strconv.Atoi(os.Getenv("REDIS_DB"))
 	AppConfig = &Config{
 		DBUser:    os.Getenv("DB_USER"),
 		DBPass:    os.Getenv("DB_PASS"),
@@ -35,5 +40,9 @@ func LoadConfig() {
 		GinMode:   os.Getenv("GIN_MODE"),
 		Port:      os.Getenv("PORT"),
 		JwtSecret: os.Getenv("JWT_SECRET"),
+
+		RedisAddr: os.Getenv("REDIS_ADDR"),
+		RedisPass: os.Getenv("REDIS_PASS"),
+		RedisDB:   redisDB,
 	}
 }

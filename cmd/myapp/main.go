@@ -15,7 +15,8 @@ func main() {
 	config.LoadConfig()
 	//init mysql
 	config.InitDatabase()
-
+	//init redis
+	config.InitRedis()
 	// init gin
 	router := config.InitGin()
 	// type go_api_env struct {
