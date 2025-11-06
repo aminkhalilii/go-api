@@ -3,15 +3,21 @@ package routes
 import (
 	"go-api/internal/controllers"
 	"go-api/internal/middlewares"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
 
 func RegisterUserRoutes(r *gin.Engine, uc *controllers.UserController, ac *controllers.AuthController) {
 
-	r.POST("/register", ac.Register)
-	r.POST("/login", ac.Login)
-	r.POST("/refresh", ac.RefreshToken)
+	rateLimitGroup := r.Group("/")
+	rateLimitGroup.Use(middlewares.RateLimitMiddleware(3, 1*time.Minute))
+	{
+		rateLimitGroup.POST("/register", ac.Register)
+		rateLimitGroup.POST("/login", ac.Login)
+		rateLimitGroup.POST("/refresh", ac.RefreshToken)
+	}
+
 	authorized := r.Group("/")
 	authorized.Use(middlewares.AuthRequired())
 	{
