@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"go-api/internal/cache"
 	"go-api/internal/controllers"
 	"go-api/internal/middlewares"
 	"time"
@@ -11,7 +12,8 @@ import (
 func RegisterUserRoutes(r *gin.Engine, uc *controllers.UserController, ac *controllers.AuthController) {
 
 	rateLimitGroup := r.Group("/")
-	rateLimitGroup.Use(middlewares.RateLimitMiddleware(3, 1*time.Minute))
+	redis_cache := cache.NewRedisCache()
+	rateLimitGroup.Use(middlewares.RateLimitMiddleware(redis_cache, 3, 1*time.Minute))
 	{
 		rateLimitGroup.POST("/register", ac.Register)
 		rateLimitGroup.POST("/login", ac.Login)
