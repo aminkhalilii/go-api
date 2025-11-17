@@ -26,7 +26,7 @@ func main() {
 	defer ch.Close()
 
 	err = ch.ExchangeDeclare(
-		"test_exchange",
+		"user_exchange",
 		"direct",
 		true,
 		false,
@@ -43,7 +43,7 @@ func main() {
 		log.Fatalf("❌ error   Queue: %v", err)
 	}
 
-	err = ch.QueueBind(q.Name, "myKey", "test_exchange", false, nil)
+	err = ch.QueueBind(q.Name, "user.registered", "user_exchange", false, nil)
 	if err != nil {
 		log.Fatalf("❌ error  Bind  : %v", err)
 	}

@@ -13,7 +13,7 @@ func RegisterUserRoutes(r *gin.Engine, uc *controllers.UserController, ac *contr
 
 	rateLimitGroup := r.Group("/")
 	redis_cache := cache.NewRedisCache()
-	rateLimitGroup.Use(middlewares.RateLimitMiddleware(redis_cache, 3, 1*time.Minute))
+	rateLimitGroup.Use(middlewares.RateLimitMiddleware(redis_cache, 10, 1*time.Minute))
 	{
 		rateLimitGroup.POST("/register", ac.Register)
 		rateLimitGroup.POST("/login", ac.Login)

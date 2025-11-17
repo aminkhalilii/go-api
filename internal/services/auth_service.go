@@ -1,11 +1,14 @@
 package services
 
 import (
+	"encoding/json"
 	"errors"
 	"go-api/config"
+	messagebroker "go-api/internal/messageBroker"
 	"go-api/internal/models"
 	"go-api/internal/repositories"
 	"go-api/pkg/security"
+	"log"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -24,11 +27,15 @@ type AuthServiceInterface interface {
 }
 
 type AuthService struct {
-	userRepo repositories.UserRepositoryInterface
+	userRepo      repositories.UserRepositoryInterface
+	messagebroker messagebroker.MessageBrokerInterface
 }
 
-func NewAuthService(userRepo repositories.UserRepositoryInterface) AuthServiceInterface {
-	return &AuthService{userRepo: userRepo}
+func NewAuthService(userRepo repositories.UserRepositoryInterface, messagebroker messagebroker.MessageBrokerInterface) AuthServiceInterface {
+	return &AuthService{
+		userRepo:      userRepo,
+		messagebroker: messagebroker,
+	}
 }
 func (s *AuthService) GenerateAccessToken(username string) (string, error) {
 	jwtSecret := []byte(config.AppConfig.JwtSecret)
@@ -75,6 +82,23 @@ func (s *AuthService) Register(user *models.User) (*models.User, error) {
 		return nil, err
 	}
 
+	// send to broker
+	err = s.messagebroker.Connect()
+	if err != nil {
+		log.Fatal("Failed to connect RabbitMQ:", err)
+	}
+
+	successfulRegistration := map[string]interface{}{
+		"user_id": newUser.ID,
+		"email":   newUser.Email,
+		"time":    time.Now().Unix(),
+	}
+	jsonBody, _ := json.Marshal(successfulRegistration)
+
+	err = s.messagebroker.Publish("user_exchange", "user.registered", jsonBody)
+	if err != nil {
+		log.Println("Publish error:", err)
+	}
 	return newUser, nil
 }
 

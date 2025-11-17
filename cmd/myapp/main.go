@@ -3,6 +3,7 @@ package main
 import (
 	"go-api/config"
 	"go-api/internal/controllers"
+	"go-api/internal/messageBroker/rabbitmq"
 	"go-api/internal/repositories/mysql"
 	"go-api/internal/routes"
 	"go-api/internal/services"
@@ -41,7 +42,9 @@ func main() {
 
 	mysqlRepo := mysql.NewMysqlRepository()
 	userService := services.NewUserService(mysqlRepo)
-	authService := services.NewAuthService(mysqlRepo)
+	url := "amqp://admin:secret123@localhost:5672/"
+	rabbitmq := rabbitmq.NewRabbitMQ(url)
+	authService := services.NewAuthService(mysqlRepo, rabbitmq)
 	userController := controllers.NewUserController(userService)
 	authController := controllers.NewAuthController(authService)
 	routes.RegisterUserRoutes(router, userController, authController)
