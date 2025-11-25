@@ -4,37 +4,19 @@ import "github.com/streadway/amqp"
 
 // RabbitMQ implements message broker behavior using RabbitMQ.
 type RabbitMQ struct {
-	url     string
-	conn    *amqp.Connection
-	channel *amqp.Channel
+	Channel *amqp.Channel
 }
 
 // NewRabbitMQ creates a new RabbitMQ instance.
-func NewRabbitMQ(url string) *RabbitMQ {
+func NewRabbitMQ(ch *amqp.Channel) *RabbitMQ {
 	return &RabbitMQ{
-		url: url,
+		Channel: ch,
 	}
-}
-
-// Connect establishes the connection and channel.
-func (r *RabbitMQ) Connect() error {
-	conn, err := amqp.Dial(r.url)
-	if err != nil {
-		return err
-	}
-	r.conn = conn
-
-	ch, err := conn.Channel()
-	if err != nil {
-		return err
-	}
-	r.channel = ch
-	return nil
 }
 
 // DeclareExchange creates an exchange if it does not exist.
 func (r *RabbitMQ) DeclareExchange(name, kind string) error {
-	return r.channel.ExchangeDeclare(
+	return r.Channel.ExchangeDeclare(
 		name,
 		kind,  // direct, fanout, topic, headers
 		true,  // durable
@@ -47,7 +29,7 @@ func (r *RabbitMQ) DeclareExchange(name, kind string) error {
 
 // DeclareQueue creates a queue if it does not exist.
 func (r *RabbitMQ) DeclareQueue(name string) error {
-	_, err := r.channel.QueueDeclare(
+	_, err := r.Channel.QueueDeclare(
 		name,
 		true,
 		false,
@@ -60,7 +42,7 @@ func (r *RabbitMQ) DeclareQueue(name string) error {
 
 // BindQueue binds a queue to an exchange using a routing key.
 func (r *RabbitMQ) BindQueue(queue, exchange, routingKey string) error {
-	return r.channel.QueueBind(
+	return r.Channel.QueueBind(
 		queue,
 		routingKey,
 		exchange,
@@ -71,7 +53,7 @@ func (r *RabbitMQ) BindQueue(queue, exchange, routingKey string) error {
 
 // Publish sends a message to the exchange with a routing key.
 func (r *RabbitMQ) Publish(exchange, routingKey string, message []byte) error {
-	return r.channel.Publish(
+	return r.Channel.Publish(
 		exchange,
 		routingKey,
 		false,
@@ -85,7 +67,7 @@ func (r *RabbitMQ) Publish(exchange, routingKey string, message []byte) error {
 
 // Consume receives messages from a queue.
 func (r *RabbitMQ) Consume(queue string) (<-chan []byte, error) {
-	msgs, err := r.channel.Consume(
+	msgs, err := r.Channel.Consume(
 		queue,
 		"",
 		true,
@@ -107,15 +89,4 @@ func (r *RabbitMQ) Consume(queue string) (<-chan []byte, error) {
 	}()
 
 	return out, nil
-}
-
-// Close closes the channel and connection.
-func (r *RabbitMQ) Close() error {
-	if r.channel != nil {
-		r.channel.Close()
-	}
-	if r.conn != nil {
-		r.conn.Close()
-	}
-	return nil
 }
