@@ -21,6 +21,8 @@ type Config struct {
 	RedisAddr string
 	RedisPass string
 	RedisDB   int
+	//rabbit
+	RabbitMQURL string
 }
 
 var AppConfig *Config
@@ -41,8 +43,9 @@ func LoadConfig() {
 		Port:      os.Getenv("PORT"),
 		JwtSecret: os.Getenv("JWT_SECRET"),
 
-		RedisAddr: os.Getenv("REDIS_ADDR"),
-		RedisPass: os.Getenv("REDIS_PASS"),
-		RedisDB:   redisDB,
+		RedisAddr:   os.Getenv("REDIS_ADDR"),
+		RedisPass:   os.Getenv("REDIS_PASS"),
+		RedisDB:     redisDB,
+		RabbitMQURL: os.Getenv("RabbitMQURL"),
 	}
 }

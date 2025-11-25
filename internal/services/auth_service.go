@@ -82,12 +82,6 @@ func (s *AuthService) Register(user *models.User) (*models.User, error) {
 		return nil, err
 	}
 
-	// send to broker
-	err = s.messagebroker.Connect()
-	if err != nil {
-		log.Fatal("Failed to connect RabbitMQ:", err)
-	}
-
 	successfulRegistration := map[string]interface{}{
 		"user_id": newUser.ID,
 		"email":   newUser.Email,

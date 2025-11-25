@@ -3,7 +3,6 @@ package main
 import (
 	"go-api/config"
 	"go-api/internal/controllers"
-	"go-api/internal/messageBroker/rabbitmq"
 	"go-api/internal/repositories/mysql"
 	"go-api/internal/routes"
 	"go-api/internal/services"
@@ -20,6 +19,10 @@ func main() {
 	config.InitRedis()
 	// init gin
 	router := config.InitGin()
+	// init rabbitmq
+	config.InitRabbitMQ()
+	defer config.CloseRabbitMQ()
+	// init repository
 	// type go_api_env struct {
 	// 	db_driver       string
 	// 	redis_url       string
@@ -42,9 +45,7 @@ func main() {
 
 	mysqlRepo := mysql.NewMysqlRepository()
 	userService := services.NewUserService(mysqlRepo)
-	url := "amqp://admin:secret123@localhost:5672/"
-	rabbitmq := rabbitmq.NewRabbitMQ(url)
-	authService := services.NewAuthService(mysqlRepo, rabbitmq)
+	authService := services.NewAuthService(mysqlRepo, config.RabbitMQClient)
 	userController := controllers.NewUserController(userService)
 	authController := controllers.NewAuthController(authService)
 	routes.RegisterUserRoutes(router, userController, authController)
