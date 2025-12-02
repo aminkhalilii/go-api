@@ -4,11 +4,15 @@ import (
 	"fmt"
 	"log"
 
+	"go-api/config"
+
 	"github.com/streadway/amqp"
 )
 
 func main() {
-	conn, err := amqp.Dial("amqp://admin:secret123@localhost:5672/")
+	config.LoadConfig()
+	fmt.Println(config.AppConfig.RabbitMQURL)
+	conn, err := amqp.Dial(config.AppConfig.RabbitMQURL)
 	if err != nil {
 		log.Fatalf("error connection %v", err)
 	}

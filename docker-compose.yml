@@ -1,6 +1,7 @@
 version: "3.9"
 services:
   myapp:
+    hostname: myapp
     build:
       context: .
       dockerfile: Dockerfile
@@ -9,43 +10,95 @@ services:
     ports:
       - "8080:8080"
     depends_on:
-      - mysql
-      - redis
-      - rabbit
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      rabbit:
+        condition: service_healthy
     env_file:
       - .env
+    networks:
+      - app_net
+      - mysql_net
+      - redis_net
+      - rabbit_net
+    restart: unless-stopped
   consumer:
+    hostname: consumer
     build:
       context: .
       dockerfile: Dockerfile
       args:
         TARGET: cmd/consumer
     depends_on:
-      - mysql
-      - redis
-      - rabbit
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      rabbit:
+        condition: service_healthy
     env_file:
       - .env
+    networks:
+      - worker_net
+      - mysql_net
+      - redis_net
+      - rabbit_net
+    restart: unless-stopped
   mysql:
+    hostname: mysql
     image: mysql:8
     environment:
       MYSQL_ROOT_PASSWORD: password
       MYSQL_DATABASE: mydb
     volumes:
       - mysql_data:/var/lib/mysql
-    ports:
-      - "3306:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - mysql_net
 
   redis:
+    hostname: redis
     image: redis:7
-    ports:
-      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - redis_net
 
   rabbit:
+    hostname: rabbit
     image: rabbitmq:3-management
-    ports:
-      - "5672:5672"
-      - "15672:15672"
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - rabbit_net
 
 volumes:
   mysql_data:
+
+networks:
+  app_net:
+    driver: bridge
+
+  worker_net:
+    driver: bridge
+
+  mysql_net:
+    driver: bridge
+
+  redis_net:
+    driver: bridge
+
+  rabbit_net:
+    driver: bridge
